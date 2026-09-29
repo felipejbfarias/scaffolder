@@ -47,6 +47,11 @@ export class CreateTaskDto {
   @IsOptional()
   @IsDateString({}, { message: 'Data de entrega limite deve ser uma string ISO válida.' })
   dueDate?: string;
+
+  @ApiPropertyOptional({ description: 'Categoria da tarefa', example: 'Trabalho' })
+  @IsOptional()
+  @IsString()
+  category?: string;
 }
 
 export class UpdateTaskDto {
@@ -77,6 +82,11 @@ export class UpdateTaskDto {
   @IsOptional()
   @IsDateString({}, { message: 'Data de entrega limite deve ser uma string ISO válida.' })
   dueDate?: string;
+
+  @ApiPropertyOptional({ description: 'Categoria da tarefa', example: 'Trabalho' })
+  @IsOptional()
+  @IsString()
+  category?: string;
 }
 
 export class TaskOwnerDto {
@@ -120,6 +130,9 @@ export class TaskDto {
 
   @ApiProperty({ description: 'Data de última atualização' })
   updatedAt!: string;
+
+  @ApiPropertyOptional({ description: 'Categoria da tarefa', nullable: true, example: 'Trabalho' })
+  category!: string | null;
 }
 
 export class PaginatedTasksResponseDto {

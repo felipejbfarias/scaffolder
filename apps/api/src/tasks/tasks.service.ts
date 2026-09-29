@@ -39,6 +39,7 @@ export class TasksService {
       data: {
         title: dto.title.trim(),
         description: dto.description?.trim() || null,
+        category: dto.category?.trim() || null,
         priority: (dto.priority as TaskPriorityEnum) || TaskPriorityEnum.MEDIUM,
         dueDate: dto.dueDate ? new Date(dto.dueDate) : null,
         ownerId,
@@ -76,6 +77,7 @@ export class TasksService {
       where.OR = [
         { title: { contains: search, mode: 'insensitive' } },
         { description: { contains: search, mode: 'insensitive' } },
+        { category: { contains: search, mode: 'insensitive' } },
       ];
     }
 
@@ -197,6 +199,7 @@ export class TasksService {
       data: {
         ...(dto.title !== undefined ? { title: dto.title.trim() } : {}),
         ...(dto.description !== undefined ? { description: dto.description.trim() || null } : {}),
+        ...(dto.category !== undefined ? { category: dto.category.trim() || null } : {}),
         ...(dto.status !== undefined ? { status: dto.status as TaskStatusEnum } : {}),
         ...(dto.priority !== undefined ? { priority: dto.priority as TaskPriorityEnum } : {}),
         ...(dto.dueDate !== undefined ? { dueDate: dto.dueDate ? new Date(dto.dueDate) : null } : {}),
@@ -245,6 +248,7 @@ export class TasksService {
       id: task.id,
       title: task.title,
       description: task.description,
+      category: task.category,
       status: task.status as TaskStatusEnum,
       priority: task.priority as TaskPriorityEnum,
       dueDate: task.dueDate ? new Date(task.dueDate).toISOString() : null,

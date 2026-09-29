@@ -15,6 +15,7 @@ import {
   Plus,
   RotateCcw,
   Search,
+  Tag,
   Trash2,
   X,
 } from 'lucide-react';
@@ -43,6 +44,7 @@ const taskFormSchema = z.object({
     .min(3, 'O título deve ter no mínimo 3 caracteres.')
     .max(150, 'O título deve ter no máximo 150 caracteres.'),
   description: z.string().max(1000, 'Máximo de 1000 caracteres.').optional(),
+  category: z.string().max(50, 'Máximo de 50 caracteres.').optional(),
   priority: z.enum(['LOW', 'MEDIUM', 'HIGH', 'URGENT']),
   dueDate: z.string().optional(),
 });
@@ -119,6 +121,7 @@ export function TasksPage() {
     defaultValues: {
       title: '',
       description: '',
+      category: '',
       priority: 'MEDIUM',
       dueDate: '',
     },
@@ -129,9 +132,10 @@ export function TasksPage() {
       const res = await tasksControllerCreate({
         title: data.title,
         description: data.description || undefined,
+        category: data.category || undefined,
         priority: data.priority as any,
         dueDate: data.dueDate ? new Date(data.dueDate).toISOString() : undefined,
-      });
+      } as any);
       return res.data;
     },
     onSuccess: (data) => {
@@ -163,6 +167,7 @@ export function TasksPage() {
       data: {
         title?: string;
         description?: string;
+        category?: string;
         priority?: TaskDtoPriority;
         status?: TaskDtoStatus;
         dueDate?: string;
@@ -268,7 +273,7 @@ export function TasksPage() {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
               <input
                 type="text"
-                placeholder="Buscar por título..."
+                placeholder="Buscar por título ou categoria..."
                 defaultValue={search}
                 onChange={(e) => updateParams({ search: e.target.value || undefined, page: 1 })}
                 className="flex h-10 w-full rounded-md border border-slate-300 dark:border-slate-700 bg-transparent pl-9 pr-3 py-2 text-sm placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
@@ -357,6 +362,7 @@ export function TasksPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {tasks.map((task) => {
               const desc = typeof task.description === 'string' ? task.description : '';
+              const category = typeof (task as any).category === 'string' ? (task as any).category : '';
               const dueStr = typeof task.dueDate === 'string' ? task.dueDate : '';
 
               return (
@@ -367,9 +373,17 @@ export function TasksPage() {
                   <CardContent className="p-5 flex flex-col justify-between h-full space-y-4">
                     <div className="space-y-2">
                       <div className="flex items-start justify-between gap-2">
-                        <h3 className="font-semibold text-base text-slate-900 dark:text-white line-clamp-1">
-                          {task.title}
-                        </h3>
+                        <div className="space-y-1">
+                          <h3 className="font-semibold text-base text-slate-900 dark:text-white line-clamp-1">
+                            {task.title}
+                          </h3>
+                          {category && (
+                            <div className="flex items-center gap-1 text-[11px] font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/50 w-fit px-2 py-0.5 rounded-md border border-blue-200 dark:border-blue-900/50">
+                              <Tag className="h-3 w-3" />
+                              <span>{category}</span>
+                            </div>
+                          )}
+                        </div>
                         <div className="flex items-center gap-1.5 shrink-0">
                           {getPriorityBadge(task.priority)}
                           {getStatusBadge(task.status)}
@@ -532,6 +546,13 @@ export function TasksPage() {
                 error={createErrors.title?.message}
               />
 
+              <Input
+                label="Categoria"
+                placeholder="Ex.: Faculdade, Trabalho, Pessoal"
+                {...registerCreate('category')}
+                error={createErrors.category?.message}
+              />
+
               <div className="flex flex-col gap-1.5">
                 <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
                   Descrição
@@ -618,6 +639,7 @@ function EditTaskModal({
 }) {
   const isCompleted = task.status === 'COMPLETED';
   const rawDesc = typeof task.description === 'string' ? task.description : '';
+  const rawCategory = typeof (task as any).category === 'string' ? (task as any).category : '';
   const rawDue = typeof task.dueDate === 'string' ? (task.dueDate as unknown as string).split('T')[0] : '';
 
   const {
@@ -629,6 +651,7 @@ function EditTaskModal({
     defaultValues: {
       title: task.title,
       description: rawDesc,
+      category: rawCategory,
       priority: task.priority as any,
       status: task.status as any,
       dueDate: rawDue,
@@ -666,6 +689,7 @@ function EditTaskModal({
             onSubmit({
               title: data.title,
               description: data.description || undefined,
+              category: data.category || undefined,
               priority: data.priority,
               status: data.status,
               dueDate: data.dueDate ? new Date(data.dueDate).toISOString() : undefined,
@@ -678,6 +702,13 @@ function EditTaskModal({
             disabled={isCompleted}
             {...register('title')}
             error={errors.title?.message}
+          />
+
+          <Input
+            label="Categoria"
+            disabled={isCompleted}
+            {...register('category')}
+            error={errors.category?.message}
           />
 
           <div className="flex flex-col gap-1.5">

@@ -63,6 +63,7 @@ model Task {
   status      TaskStatus   @default(PENDING)
   priority    TaskPriority @default(MEDIUM)
   dueDate     DateTime?
+  category    String?
   ownerId     String       @db.Uuid
   deletedAt   DateTime?
   createdAt   DateTime     @default(now())

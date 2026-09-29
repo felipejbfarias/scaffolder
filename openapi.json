@@ -1519,6 +1519,11 @@
             "type": "string",
             "description": "Data de entrega limite (ISO 8601)",
             "example": "2026-12-31T23:59:59.000Z"
+          },
+          "category": {
+            "type": "string",
+            "description": "Categoria da tarefa",
+            "example": "Trabalho"
           }
         },
         "required": [
@@ -1615,6 +1620,12 @@
           "updatedAt": {
             "type": "string",
             "description": "Data de última atualização"
+          },
+          "category": {
+            "type": "object",
+            "description": "Categoria da tarefa",
+            "nullable": true,
+            "example": "Trabalho"
           }
         },
         "required": [
@@ -1689,6 +1700,11 @@
           "dueDate": {
             "type": "string",
             "description": "Data de entrega limite (ISO 8601)"
+          },
+          "category": {
+            "type": "string",
+            "description": "Categoria da tarefa",
+            "example": "Trabalho"
           }
         }
       }
